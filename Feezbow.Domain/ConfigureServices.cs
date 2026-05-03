@@ -19,6 +19,9 @@ public static class ConfigureServices
         services.AddScoped<IBillService, BillService>();
         services.AddScoped<IBudgetService, BudgetService>();
         services.AddScoped<IAttachmentService, AttachmentService>();
+        services.AddScoped<IMealPlanService, MealPlanService>();
+        services.AddScoped<IRecipeService, RecipeService>();
+        services.AddScoped<IPantryService, PantryService>();
         services.AddScoped<IShoppingListService, ShoppingListService>();
 
         return services;

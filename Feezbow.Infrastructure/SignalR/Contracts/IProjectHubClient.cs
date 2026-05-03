@@ -47,4 +47,18 @@ public interface IProjectHubClient
     // Attachments
     Task AttachmentUploaded(AttachmentUploadedNotification notification);
     Task AttachmentDeleted(AttachmentDeletedNotification notification);
+
+    // Meal plans
+    Task MealPlanCreated(MealPlanCreatedNotification notification);
+    Task MealPlanUpdated(MealPlanUpdatedNotification notification);
+    Task MealPlanDeleted(MealPlanDeletedNotification notification);
+    Task MealPlanItemSet(MealPlanItemSetNotification notification);
+    Task MealPlanItemRemoved(MealPlanItemRemovedNotification notification);
+
+    // Pantry
+    Task PantryItemAdded(PantryItemAddedNotification notification);
+    Task PantryItemUpdated(PantryItemUpdatedNotification notification);
+    Task PantryItemQuantityChanged(PantryItemQuantityChangedNotification notification);
+    Task PantryItemDepleted(PantryItemDepletedNotification notification);
+    Task PantryItemRemoved(PantryItemRemovedNotification notification);
 }

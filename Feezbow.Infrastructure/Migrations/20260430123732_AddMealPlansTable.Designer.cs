@@ -3,6 +3,7 @@ using System;
 using Feezbow.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Feezbow.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260430123732_AddMealPlansTable")]
+    partial class AddMealPlansTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -749,9 +752,6 @@ namespace Feezbow.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.Property<long?>("RecipeId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(150)
@@ -761,70 +761,10 @@ namespace Feezbow.Infrastructure.Migrations
 
                     b.HasIndex("AssignedCookId");
 
-                    b.HasIndex("RecipeId");
-
                     b.HasIndex("MealPlanId", "DayOfWeek", "MealType")
                         .IsUnique();
 
                     b.ToTable("MealPlanItem");
-                });
-
-            modelBuilder.Entity("Feezbow.Domain.Entities.PantryItem", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long?>("CreatedBy")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("ExpirationDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("LastModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long?>("LastModifiedBy")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Location")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("character varying(150)");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<long>("ProjectId")
-                        .HasColumnType("bigint");
-
-                    b.Property<decimal>("Quantity")
-                        .HasPrecision(12, 3)
-                        .HasColumnType("numeric(12,3)");
-
-                    b.Property<string>("Unit")
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjectId");
-
-                    b.HasIndex("ProjectId", "ExpirationDate");
-
-                    b.HasIndex("ProjectId", "Location");
-
-                    b.ToTable("PantryItem");
                 });
 
             modelBuilder.Entity("Feezbow.Domain.Entities.Project", b =>
@@ -899,114 +839,6 @@ namespace Feezbow.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("ProjectMembers");
-                });
-
-            modelBuilder.Entity("Feezbow.Domain.Entities.Recipe", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<int?>("CookTimeMinutes")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long?>("CreatedBy")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("Instructions")
-                        .HasMaxLength(8000)
-                        .HasColumnType("character varying(8000)");
-
-                    b.Property<DateTime?>("LastModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long?>("LastModifiedBy")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<int?>("PrepTimeMinutes")
-                        .HasColumnType("integer");
-
-                    b.Property<long>("ProjectId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("Servings")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("SourceUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjectId");
-
-                    b.HasIndex("ProjectId", "Name");
-
-                    b.ToTable("Recipe");
-                });
-
-            modelBuilder.Entity("Feezbow.Domain.Entities.RecipeIngredient", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long?>("CreatedBy")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("LastModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long?>("LastModifiedBy")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("character varying(150)");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
-
-                    b.Property<int>("OrderIndex")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("Quantity")
-                        .HasPrecision(12, 3)
-                        .HasColumnType("numeric(12,3)");
-
-                    b.Property<long>("RecipeId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Unit")
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RecipeId", "OrderIndex");
-
-                    b.ToTable("RecipeIngredient");
                 });
 
             modelBuilder.Entity("Feezbow.Domain.Entities.ShoppingList", b =>
@@ -1753,25 +1585,7 @@ namespace Feezbow.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Feezbow.Domain.Entities.Recipe", "Recipe")
-                        .WithMany()
-                        .HasForeignKey("RecipeId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.Navigation("AssignedCook");
-
-                    b.Navigation("Recipe");
-                });
-
-            modelBuilder.Entity("Feezbow.Domain.Entities.PantryItem", b =>
-                {
-                    b.HasOne("Feezbow.Domain.Entities.Project", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("Feezbow.Domain.Entities.Project", b =>
@@ -1802,26 +1616,6 @@ namespace Feezbow.Infrastructure.Migrations
                     b.Navigation("Project");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Feezbow.Domain.Entities.Recipe", b =>
-                {
-                    b.HasOne("Feezbow.Domain.Entities.Project", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Project");
-                });
-
-            modelBuilder.Entity("Feezbow.Domain.Entities.RecipeIngredient", b =>
-                {
-                    b.HasOne("Feezbow.Domain.Entities.Recipe", null)
-                        .WithMany("Ingredients")
-                        .HasForeignKey("RecipeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Feezbow.Domain.Entities.ShoppingList", b =>
@@ -1929,11 +1723,6 @@ namespace Feezbow.Infrastructure.Migrations
                     b.Navigation("Boards");
 
                     b.Navigation("ProjectMembers");
-                });
-
-            modelBuilder.Entity("Feezbow.Domain.Entities.Recipe", b =>
-                {
-                    b.Navigation("Ingredients");
                 });
 
             modelBuilder.Entity("Feezbow.Domain.Entities.ShoppingList", b =>

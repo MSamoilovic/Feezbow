@@ -54,4 +54,31 @@ public static class CacheKeys
 
     public static string AttachmentsByOwner(AttachmentOwnerType ownerType, long ownerId) =>
         $"attachments:{ownerType.ToString().ToLowerInvariant()}:{ownerId}";
+
+    public static string ProjectMealPlansPrefix(long projectId) =>
+        $"project:{projectId}:meal-plans:";
+
+    public static string ProjectMealPlanByWeek(long projectId, DateTime weekStart) =>
+        $"project:{projectId}:meal-plans:week:{weekStart:yyyyMMdd}";
+
+    public static string ProjectMealPlansRecent(long projectId, int count) =>
+        $"project:{projectId}:meal-plans:recent:{count}";
+
+    public static string ProjectRecipesPrefix(long projectId) =>
+        $"project:{projectId}:recipes:";
+
+    public static string ProjectRecipesList(long projectId, int skip, int take) =>
+        $"project:{projectId}:recipes:list:s{skip}:t{take}";
+
+    public static string Recipe(long recipeId) =>
+        $"recipe:{recipeId}";
+
+    public static string ProjectPantryPrefix(long projectId) =>
+        $"project:{projectId}:pantry:";
+
+    public static string ProjectPantryList(long projectId, string? search, string? location, int? expiringWithinDays) =>
+        $"project:{projectId}:pantry:list:s={search ?? "*"}:l={location ?? "*"}:e={expiringWithinDays?.ToString() ?? "*"}";
+
+    public static string PantryItem(long pantryItemId) =>
+        $"pantry-item:{pantryItemId}";
 }
