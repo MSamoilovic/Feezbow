@@ -39,6 +39,22 @@ public class MealPlanRepository(ApplicationDbContext dbContext) : IMealPlanRepos
             .FirstOrDefaultAsync(p => p.ProjectId == projectId && p.WeekStart == weekStart, cancellationToken);
     }
 
+    public async Task<IReadOnlyList<MealPlan>> GetByProjectAndDateRangeAsync(
+        long projectId, DateTime from, DateTime to, CancellationToken cancellationToken = default)
+    {
+        // Fetch all weeks whose Monday falls within or overlaps the requested range.
+        // A week's Monday (WeekStart) is included when the week [WeekStart, WeekStart+7) intersects [from, to).
+        var weekBefore = from.AddDays(-6);
+        return await _dbSet
+            .Include(p => p.Items).ThenInclude(i => i.AssignedCook)
+            .Include(p => p.Items).ThenInclude(i => i.Recipe)
+            .Where(p => p.ProjectId == projectId
+                && p.WeekStart >= weekBefore
+                && p.WeekStart < to)
+            .OrderBy(p => p.WeekStart)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<IReadOnlyList<MealPlan>> GetRecentByProjectAsync(
         long projectId,
         int count,

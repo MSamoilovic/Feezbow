@@ -20,6 +20,8 @@ public interface IMealPlanRepository
         DateTime weekStart,
         CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<MealPlan>> GetByProjectAndDateRangeAsync(long projectId, DateTime from, DateTime to, CancellationToken cancellationToken = default);
+
     Task<IReadOnlyList<MealPlan>> GetRecentByProjectAsync(
         long projectId,
         int count,

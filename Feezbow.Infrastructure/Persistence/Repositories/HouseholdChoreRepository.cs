@@ -32,6 +32,19 @@ public class HouseholdChoreRepository(ApplicationDbContext dbContext) : IHouseho
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<HouseholdChore>> GetByProjectAndDateRangeAsync(
+        long projectId, DateTime from, DateTime to, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .Include(c => c.AssignedTo)
+            .Where(c => c.ProjectId == projectId
+                && c.DueDate.HasValue
+                && c.DueDate.Value >= from
+                && c.DueDate.Value < to)
+            .OrderBy(c => c.DueDate)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task AddAsync(HouseholdChore chore, CancellationToken cancellationToken = default)
     {
         await _dbSet.AddAsync(chore, cancellationToken);

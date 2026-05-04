@@ -28,6 +28,7 @@ public class ApplicationDbContext(
     public DbSet<ActivityLog> ActivityLogs { get; set; } = null!;
     public DbSet<Label> Labels { get; set; } = null!;
     public DbSet<BoardTaskLabel> BoardTaskLabels { get; set; } = null!;
+    public DbSet<HouseholdEvent> HouseholdEvents { get; set; } = null!;
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
