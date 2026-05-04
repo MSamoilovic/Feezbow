@@ -6,6 +6,7 @@ public interface IHouseholdChoreRepository
 {
     Task<HouseholdChore?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<HouseholdChore>> GetByProjectAsync(long projectId, bool includeCompleted, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<HouseholdChore>> GetByProjectAndDateRangeAsync(long projectId, DateTime from, DateTime to, CancellationToken cancellationToken = default);
     Task AddAsync(HouseholdChore chore, CancellationToken cancellationToken = default);
     void Remove(HouseholdChore chore);
 }

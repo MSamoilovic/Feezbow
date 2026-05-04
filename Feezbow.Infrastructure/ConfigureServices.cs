@@ -162,6 +162,7 @@ public static class ConfigureServices
         services.AddScoped<IBillRepository, BillRepository>();
         services.AddScoped<IAttachmentRepository, AttachmentRepository>();
         services.AddScoped<IMealPlanRepository, MealPlanRepository>();
+        services.AddScoped<IHouseholdEventRepository, HouseholdEventRepository>();
         services.AddScoped<IRecipeRepository, RecipeRepository>();
         services.AddScoped<IPantryRepository, PantryRepository>();
 

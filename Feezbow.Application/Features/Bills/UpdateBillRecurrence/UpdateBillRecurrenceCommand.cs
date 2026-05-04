@@ -1,4 +1,3 @@
-using Feezbow.Domain.Entities.Common;
 using Feezbow.Domain.Enums;
 using MediatR;
 
@@ -11,4 +10,4 @@ public record UpdateBillRecurrenceCommand(
     IEnumerable<DayOfWeek>? DaysOfWeek = null,
     DateTime? EndDate = null) : IRequest<UpdateBillRecurrenceCommandResponse>;
 
-public record UpdateBillRecurrenceCommandResponse(Result<long> Result);
+

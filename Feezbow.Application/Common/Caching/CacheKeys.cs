@@ -81,4 +81,16 @@ public static class CacheKeys
 
     public static string PantryItem(long pantryItemId) =>
         $"pantry-item:{pantryItemId}";
+
+    public static string ProjectCalendar(long projectId, DateTime from, DateTime to) =>
+        $"project:{projectId}:calendar:{from:yyyyMMdd}:{to:yyyyMMdd}";
+
+    public static string ProjectCalendarPrefix(long projectId) =>
+        $"project:{projectId}:calendar:";
+
+    public static string ProjectHouseholdEvents(long projectId) =>
+        $"project:{projectId}:household-events";
+
+    public static string HouseholdEvent(long eventId) =>
+        $"household-event:{eventId}";
 }
