@@ -93,4 +93,7 @@ public static class CacheKeys
 
     public static string HouseholdEvent(long eventId) =>
         $"household-event:{eventId}";
+
+    public static string ProjectDashboard(long projectId) =>
+        $"project:{projectId}:dashboard";
 }
