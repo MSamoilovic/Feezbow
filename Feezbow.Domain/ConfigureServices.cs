@@ -23,6 +23,7 @@ public static class ConfigureServices
         services.AddScoped<IRecipeService, RecipeService>();
         services.AddScoped<IPantryService, PantryService>();
         services.AddScoped<IShoppingListService, ShoppingListService>();
+        services.AddScoped<IDashboardService, DashboardService>();
 
         return services;
     }
