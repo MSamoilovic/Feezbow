@@ -11,4 +11,6 @@ public interface INotificationHubClient
     Task UserReactivated(UserReactivatedNotification notification);
     Task TaskAssigned(TaskAssignedNotification notification);
     Task UserMentioned(UserMentionedNotification notification);
+    Task NotificationReceived(NotificationReceivedPayload payload);
+    Task UnreadCountChanged(int unreadCount);
 }

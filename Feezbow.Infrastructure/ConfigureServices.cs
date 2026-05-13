@@ -165,6 +165,7 @@ public static class ConfigureServices
         services.AddScoped<IHouseholdEventRepository, HouseholdEventRepository>();
         services.AddScoped<IRecipeRepository, RecipeRepository>();
         services.AddScoped<IPantryRepository, PantryRepository>();
+        services.AddScoped<INotificationRepository, NotificationRepository>();
 
         // Storage
         services.AddOptions<StorageOptions>()
@@ -228,6 +229,7 @@ public static class ConfigureServices
         services.AddScoped<IAttachmentNotificationService, AttachmentNotificationService>();
         services.AddScoped<IMealPlanNotificationService, MealPlanNotificationService>();
         services.AddScoped<IPantryNotificationService, PantryNotificationService>();
+        services.AddScoped<INotificationPushService, NotificationPushService>();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 

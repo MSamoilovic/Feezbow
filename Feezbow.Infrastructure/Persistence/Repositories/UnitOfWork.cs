@@ -18,7 +18,8 @@ public class UnitOfWork(ApplicationDbContext dbContext,
     IHouseholdChoreRepository householdChoreRepository,
     IBillRepository billRepository,
     IMealPlanRepository mealPlanRepository,
-    IHouseholdEventRepository householdEventRepository) : IUnitOfWork, IDisposable
+    IHouseholdEventRepository householdEventRepository,
+    INotificationRepository notificationRepository) : IUnitOfWork, IDisposable
 {
 
     // Svojstva za svaki interfejs repozitorijuma
@@ -35,6 +36,7 @@ public class UnitOfWork(ApplicationDbContext dbContext,
     public IBillRepository Bills { get; } = billRepository;
     public IMealPlanRepository MealPlans { get; } = mealPlanRepository;
     public IHouseholdEventRepository HouseholdEvents { get; } = householdEventRepository;
+    public INotificationRepository Notifications { get; } = notificationRepository;
 
     public async Task<int> CompleteAsync(CancellationToken cancellationToken)
     {
