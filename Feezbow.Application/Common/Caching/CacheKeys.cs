@@ -96,4 +96,13 @@ public static class CacheKeys
 
     public static string ProjectDashboard(long projectId) =>
         $"project:{projectId}:dashboard";
+
+    public static string UserNotifications(long userId, bool unreadOnly, int page, int pageSize) =>
+        $"user:{userId}:notifications:u={unreadOnly}:p={page}:s={pageSize}";
+
+    public static string UserNotificationsPrefix(long userId) =>
+        $"user:{userId}:notifications:";
+
+    public static string UserUnreadCount(long userId) =>
+        $"user:{userId}:notifications:unread-count";
 }

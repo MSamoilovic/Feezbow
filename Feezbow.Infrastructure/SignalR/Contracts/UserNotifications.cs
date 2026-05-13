@@ -44,3 +44,12 @@ public record UserOfflineNotification
     public required string UserId { get; init; }
     public DateTime Timestamp { get; init; } = DateTime.UtcNow;
 }
+
+public record NotificationReceivedPayload
+{
+    public required long NotificationId { get; init; }
+    public required string Type { get; init; }
+    public required string Title { get; init; }
+    public string? Body { get; init; }
+    public DateTime Timestamp { get; init; } = DateTime.UtcNow;
+}

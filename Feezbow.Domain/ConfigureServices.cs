@@ -24,6 +24,7 @@ public static class ConfigureServices
         services.AddScoped<IPantryService, PantryService>();
         services.AddScoped<IShoppingListService, ShoppingListService>();
         services.AddScoped<IDashboardService, DashboardService>();
+        services.AddScoped<INotificationDomainService, NotificationDomainService>();
 
         return services;
     }
