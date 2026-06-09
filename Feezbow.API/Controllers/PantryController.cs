@@ -1,13 +1,14 @@
 using Asp.Versioning;
-using MediatR;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Feezbow.Application.Features.Pantry.AddPantryItem;
 using Feezbow.Application.Features.Pantry.AdjustPantryItemQuantity;
 using Feezbow.Application.Features.Pantry.GetPantryItemById;
 using Feezbow.Application.Features.Pantry.GetPantryItemsByProject;
+using Feezbow.Application.Features.Pantry.ParseReceipt;
 using Feezbow.Application.Features.Pantry.RemovePantryItem;
 using Feezbow.Application.Features.Pantry.UpdatePantryItem;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Feezbow.Controllers;
 
@@ -23,8 +24,11 @@ public class PantryController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Add(long projectId, [FromBody] AddPantryItemCommand command,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> Add(
+        long projectId,
+        [FromBody] AddPantryItemCommand command,
+        CancellationToken cancellationToken
+    )
     {
         return Ok(await mediator.Send(command with { ProjectId = projectId }, cancellationToken));
     }
@@ -37,14 +41,20 @@ public class PantryController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetByProject(long projectId,
+    public async Task<IActionResult> GetByProject(
+        long projectId,
         [FromQuery] string? search,
         [FromQuery] string? location,
         [FromQuery] int? expiringWithinDays,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
-        return Ok(await mediator.Send(
-            new GetPantryItemsByProjectQuery(projectId, search, location, expiringWithinDays), cancellationToken));
+        return Ok(
+            await mediator.Send(
+                new GetPantryItemsByProjectQuery(projectId, search, location, expiringWithinDays),
+                cancellationToken
+            )
+        );
     }
 
     /// <summary>Returns a single pantry item.</summary>
@@ -63,10 +73,15 @@ public class PantryController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Update(long pantryItemId, [FromBody] UpdatePantryItemCommand command,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> Update(
+        long pantryItemId,
+        [FromBody] UpdatePantryItemCommand command,
+        CancellationToken cancellationToken
+    )
     {
-        return Ok(await mediator.Send(command with { PantryItemId = pantryItemId }, cancellationToken));
+        return Ok(
+            await mediator.Send(command with { PantryItemId = pantryItemId }, cancellationToken)
+        );
     }
 
     /// <summary>
@@ -78,11 +93,18 @@ public class PantryController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> AdjustQuantity(long pantryItemId, [FromQuery] decimal delta,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> AdjustQuantity(
+        long pantryItemId,
+        [FromQuery] decimal delta,
+        CancellationToken cancellationToken
+    )
     {
-        return Ok(await mediator.Send(
-            new AdjustPantryItemQuantityCommand(pantryItemId, delta), cancellationToken));
+        return Ok(
+            await mediator.Send(
+                new AdjustPantryItemQuantityCommand(pantryItemId, delta),
+                cancellationToken
+            )
+        );
     }
 
     /// <summary>Removes the pantry item.</summary>
@@ -90,8 +112,37 @@ public class PantryController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Remove(long pantryItemId, CancellationToken cancellationToken)
+    public async Task<IActionResult> Remove(
+        long pantryItemId,
+        CancellationToken cancellationToken
+    ) => Ok(await mediator.Send(new RemovePantryItemCommand(pantryItemId), cancellationToken));
+
+    // In the controller body:
+    /// <summary>
+    /// AI-powered receipt parser. Accepts a photo of a grocery receipt and returns
+    /// a list of parsed pantry items as a proposal (not saved).
+    /// Frontend shows a review checklist; user confirms to call POST /pantry/projects/{projectId} per item.
+    /// </summary>
+    [HttpPost("projects/{projectId:long}/parse-receipt")]
+    [RequestSizeLimit(5_242_880)]
+    [Consumes("multipart/form-data")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status413RequestEntityTooLarge)]
+    public async Task<IActionResult> ParseReceipt(
+        long projectId,
+        IFormFile image,
+        CancellationToken cancellationToken
+    )
     {
-        return Ok(await mediator.Send(new RemovePantryItemCommand(pantryItemId), cancellationToken));
+        var allowedMimeTypes = new[] { "image/jpeg", "image/png", "image/webp" };
+        if (!allowedMimeTypes.Contains(image.ContentType))
+            return BadRequest("Image must be JPEG, PNG, or WebP.");
+
+        using var ms = new MemoryStream();
+        await image.CopyToAsync(ms, cancellationToken);
+
+        var command = new ParseReceiptCommand(projectId, ms.ToArray(), image.ContentType);
+        return Ok(await mediator.Send(command, cancellationToken));
     }
 }
