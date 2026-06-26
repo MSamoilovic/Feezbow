@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using Feezbow.Application.Features.Dashboard.GetDashboard;
+using Feezbow.Application.Features.Digest;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,5 +27,20 @@ public class HouseholdDashboardController(IMediator mediator) : ControllerBase
         CancellationToken cancellationToken)
     {
         return Ok(await mediator.Send(new GetDashboardQuery(projectId), cancellationToken));
+    }
+
+    /// <summary>
+    /// Generates (or returns cached) the weekly AI household digest for the project.
+    /// The digest is also broadcast to all connected project members via SignalR
+    /// (method: ReceiveDigest). Result is cached for 12 hours.
+    /// </summary>
+    [HttpPost("digest")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GenerateDigest(
+        long projectId,
+        CancellationToken cancellationToken)
+    {
+        return Ok(await mediator.Send(new GenerateDigestQuery(projectId), cancellationToken));
     }
 }

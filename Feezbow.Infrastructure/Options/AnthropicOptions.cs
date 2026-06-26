@@ -13,6 +13,7 @@ public class AnthropicOptions
     public bool TaskParserEnabled { get; init; } = true;
     public bool PantryReceiptParserEnabled { get; init; } = true;
     public bool BillOcrEnabled { get; init; } = true;
+    public bool WeeklyDigestEnabled { get; init; } = true;
 
     /// <summary>
     /// AI prijedlozi sa confidence ispod ovog praga se ne vraćaju korisniku.

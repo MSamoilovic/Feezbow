@@ -7,6 +7,7 @@ using Feezbow.Domain.Interfaces.Repositories;
 using Feezbow.Domain.Interfaces.Services;
 using Feezbow.Infrastructure.AI;
 using Feezbow.Infrastructure.AI.Helpers;
+using Feezbow.Infrastructure.BackgroundServices;
 using Feezbow.Infrastructure.Options;
 using Feezbow.Infrastructure.Options.Validators;
 using Feezbow.Infrastructure.Persistence;
@@ -315,6 +316,8 @@ public static class ConfigureServices
         services.AddScoped<IAIService, AnthropicAiService>();
         services.AddScoped<IRecipeUrlFetcher, RecipeUrlFetcher>();
         services.AddSingleton<IPdfTextExtractor, PdfTextExtractor>();
+        services.AddScoped<IDigestNotificationService, DigestNotificationService>();
+        services.AddHostedService<DigestScheduler>();
 
         services.AddHttpClient(
             "RecipeUrlFetcher",

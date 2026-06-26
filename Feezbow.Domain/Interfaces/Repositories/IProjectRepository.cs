@@ -12,4 +12,5 @@ public interface IProjectRepository: IRepository<Project>
     
     // Simple helper metode
     Task<bool> IsProjectMemberAsync(long projectId, long userId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<long>> GetAllActiveIdsAsync(CancellationToken cancellationToken = default);
 }
