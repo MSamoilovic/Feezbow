@@ -66,6 +66,9 @@ public class AnthropicAiService(
         )
             throw new AIServiceException("Pantry receipt parser feature is disabled.");
 
+        if (opts.RequiresFeature == "BillOcr" && !options.Value.BillOcrEnabled)
+            throw new AIServiceException("Bill OCR feature is disabled.");
+
         // Token budget guard --- english => chars/4
         int estimatedTokens = (int)Math.Ceiling((systemPrompt.Length + userPrompt.Length) / 4.0);
         if (estimatedTokens > opts.MaxInputTokens)

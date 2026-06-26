@@ -11,6 +11,7 @@ using Feezbow.Application.Features.Bills.MarkBillPaid;
 using Feezbow.Application.Features.Bills.RecordSplitPayment;
 using Feezbow.Application.Features.Bills.SetBillSplit;
 using Feezbow.Application.Features.Bills.UpdateBill;
+using Feezbow.Application.Features.Bills.ParseBill;
 using Feezbow.Application.Features.Bills.UpdateBillRecurrence;
 
 namespace Feezbow.Controllers;
@@ -128,6 +129,34 @@ public class BillsController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> CancelRecurrence(long projectId, long billId, CancellationToken cancellationToken)
     {
         return Ok(await mediator.Send(new CancelBillRecurrenceCommand(billId), cancellationToken));
+    }
+
+    /// <summary>
+    /// AI-powered bill OCR. Accepts a photo or PDF of a bill/invoice and returns
+    /// extracted fields as a proposal (not saved). Frontend shows a prefilled form;
+    /// user confirms to call POST /bills to create the bill.
+    /// </summary>
+    [HttpPost("projects/{projectId:long}/parse-bill")]
+    [RequestSizeLimit(10_485_760)]
+    [Consumes("multipart/form-data")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status413RequestEntityTooLarge)]
+    public async Task<IActionResult> ParseBill(
+        long projectId,
+        IFormFile file,
+        CancellationToken cancellationToken
+    )
+    {
+        var allowedMimeTypes = new[] { "image/jpeg", "image/png", "image/webp", "application/pdf" };
+        if (!allowedMimeTypes.Contains(file.ContentType))
+            return BadRequest("File must be JPEG, PNG, WebP, or PDF.");
+
+        using var ms = new MemoryStream();
+        await file.CopyToAsync(ms, cancellationToken);
+
+        var command = new ParseBillCommand(projectId, ms.ToArray(), file.ContentType);
+        return Ok(await mediator.Send(command, cancellationToken));
     }
 
     /// <summary>
