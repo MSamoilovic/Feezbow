@@ -72,6 +72,9 @@ public class AnthropicAiService(
         if (opts.RequiresFeature == "WeeklyDigest" && !options.Value.WeeklyDigestEnabled)
             throw new AIServiceException("Weekly digest feature is disabled.");
 
+        if (opts.RequiresFeature == "MealPlanSuggest" && !options.Value.MealPlanSuggestEnabled)
+            throw new AIServiceException("Meal plan suggestions feature is disabled.");
+
         // Token budget guard --- english => chars/4
         int estimatedTokens = (int)Math.Ceiling((systemPrompt.Length + userPrompt.Length) / 4.0);
         if (estimatedTokens > opts.MaxInputTokens)
