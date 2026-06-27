@@ -8,4 +8,8 @@ public interface IDashboardService
         long projectId,
         long userId,
         CancellationToken cancellationToken = default);
+
+    Task<HouseholdDashboardData> GetSystemAsync(
+        long projectId,
+        CancellationToken cancellationToken = default);
 }

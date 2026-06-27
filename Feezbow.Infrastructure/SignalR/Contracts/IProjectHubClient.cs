@@ -61,4 +61,7 @@ public interface IProjectHubClient
     Task PantryItemQuantityChanged(PantryItemQuantityChangedNotification notification);
     Task PantryItemDepleted(PantryItemDepletedNotification notification);
     Task PantryItemRemoved(PantryItemRemovedNotification notification);
+
+    // AI Digest
+    Task ReceiveDigest(DigestReadyNotification notification);
 }

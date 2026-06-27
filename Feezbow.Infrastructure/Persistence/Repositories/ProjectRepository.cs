@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Feezbow.Domain.Entities;
+using Feezbow.Domain.Enums;
 using Feezbow.Domain.Interfaces.Repositories;
 using Feezbow.Domain.Specifications.ProjectSpecifications;
 
@@ -45,5 +46,13 @@ public class ProjectRepository(ApplicationDbContext dbContext) : Repository<Proj
     {
         return await _dbContext.ProjectMembers
             .AnyAsync(pm => pm.ProjectId == projectId && pm.UserId == userId, cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<long>> GetAllActiveIdsAsync(CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .Where(p => p.Status == ProjectStatus.Active && !p.IsArchived)
+            .Select(p => p.Id)
+            .ToListAsync(cancellationToken);
     }
 }

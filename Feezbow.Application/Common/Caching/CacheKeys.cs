@@ -105,4 +105,7 @@ public static class CacheKeys
 
     public static string UserUnreadCount(long userId) =>
         $"user:{userId}:notifications:unread-count";
+
+    public static string ProjectDigest(long projectId) =>
+        $"project:{projectId}:digest";
 }

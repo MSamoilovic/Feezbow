@@ -9,6 +9,7 @@ using Feezbow.Application.Features.MealPlans.GetMealPlanByWeek;
 using Feezbow.Application.Features.MealPlans.GetRecentMealPlans;
 using Feezbow.Application.Features.MealPlans.RemoveMealPlanSlot;
 using Feezbow.Application.Features.MealPlans.SetMealPlanSlot;
+using Feezbow.Application.Features.MealPlans.SuggestMealPlan;
 using Feezbow.Application.Features.MealPlans.UpdateMealPlan;
 using Feezbow.Domain.Enums;
 
@@ -112,6 +113,29 @@ public class MealPlansController(IMediator mediator) : ControllerBase
         CancellationToken cancellationToken)
     {
         return Ok(await mediator.Send(new RemoveMealPlanSlotCommand(mealPlanId, day, mealType), cancellationToken));
+    }
+
+    /// <summary>
+    /// Returns AI-generated meal suggestions for empty slots based on pantry inventory and
+    /// the project's recipe library. Suggestions are proposals only — no slots are saved automatically.
+    /// </summary>
+    [HttpPost("projects/{projectId:long}/{mealPlanId:long}/suggest")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Suggest(
+        long projectId,
+        long mealPlanId,
+        [FromBody] SuggestMealPlanRequest? request,
+        CancellationToken cancellationToken)
+    {
+        var query = new SuggestMealPlanQuery(
+            projectId,
+            mealPlanId,
+            request?.Preferences,
+            request?.Servings);
+        return Ok(await mediator.Send(query, cancellationToken));
     }
 
     /// <summary>
