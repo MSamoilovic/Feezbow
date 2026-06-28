@@ -75,6 +75,9 @@ public class AnthropicAiService(
         if (opts.RequiresFeature == "MealPlanSuggest" && !options.Value.MealPlanSuggestEnabled)
             throw new AIServiceException("Meal plan suggestions feature is disabled.");
 
+        if (opts.RequiresFeature == "ShoppingListCleanup" && !options.Value.ShoppingListCleanupEnabled)
+            throw new AIServiceException("Shopping list cleanup feature is disabled.");
+
         // Token budget guard --- english => chars/4
         int estimatedTokens = (int)Math.Ceiling((systemPrompt.Length + userPrompt.Length) / 4.0);
         if (estimatedTokens > opts.MaxInputTokens)

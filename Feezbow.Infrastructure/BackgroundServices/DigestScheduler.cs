@@ -1,19 +1,19 @@
 using Feezbow.Application.Features.Digest;
 using Feezbow.Domain.Interfaces;
+using Feezbow.Infrastructure.Options;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Feezbow.Infrastructure.Options;
 
 namespace Feezbow.Infrastructure.BackgroundServices;
 
 public class DigestScheduler(
     IServiceScopeFactory scopeFactory,
     IOptions<AnthropicOptions> options,
-    ILogger<DigestScheduler> logger)
-    : BackgroundService
+    ILogger<DigestScheduler> logger
+) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -23,7 +23,10 @@ public class DigestScheduler(
             return;
         }
 
-        logger.LogInformation("Weekly digest scheduler started. Next run: {Next}", NextSundayAt(20, 0));
+        logger.LogInformation(
+            "Weekly digest scheduler started. Next run: {Next}",
+            NextSundayAt(20, 0)
+        );
 
         while (!stoppingToken.IsCancellationRequested)
         {
