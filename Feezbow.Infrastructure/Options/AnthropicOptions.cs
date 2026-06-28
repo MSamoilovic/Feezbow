@@ -15,6 +15,7 @@ public class AnthropicOptions
     public bool BillOcrEnabled { get; init; } = true;
     public bool WeeklyDigestEnabled { get; init; } = true;
     public bool MealPlanSuggestEnabled { get; init; } = true;
+    public bool ShoppingListCleanupEnabled { get; init; } = true;
 
     /// <summary>
     /// AI prijedlozi sa confidence ispod ovog praga se ne vraćaju korisniku.
