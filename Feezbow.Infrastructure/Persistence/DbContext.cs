@@ -31,6 +31,7 @@ public class ApplicationDbContext(
     public DbSet<HouseholdEvent> HouseholdEvents { get; set; } = null!;
     public DbSet<Notification> Notifications { get; set; } = null!;
     public DbSet<AiAuditLog> AiAuditLogs { get; set; } = null!;
+    public DbSet<AIInsight> AIInsights { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
