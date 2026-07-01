@@ -26,6 +26,7 @@ public static class ConfigureServices
         services.AddScoped<IDashboardService, DashboardService>();
         services.AddScoped<IMealPlanSuggestionService, MealPlanSuggestionService>();
         services.AddScoped<INotificationDomainService, NotificationDomainService>();
+        services.AddScoped<IInsightService, InsightService>();
 
         return services;
     }

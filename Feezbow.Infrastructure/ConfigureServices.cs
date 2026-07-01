@@ -69,7 +69,6 @@ public static class ConfigureServices
                 options.Password.RequireLowercase = true;
                 options.Password.RequiredUniqueChars = 1;
 
-                // Konfiguracija Lockout-a (opciono)
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.AllowedForNewUsers = true;
@@ -79,6 +78,11 @@ public static class ConfigureServices
             })
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
+
+        services.Configure<PasswordHasherOptions>(options =>
+        {
+            options.IterationCount = 210_000;
+        });
 
         //--- Registracija Option patterna --
         services.Configure<EmailOptions>(configuration.GetSection(EmailOptions.SectionName));
@@ -186,6 +190,7 @@ public static class ConfigureServices
         services.AddScoped<IRecipeRepository, RecipeRepository>();
         services.AddScoped<IPantryRepository, PantryRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<IAIInsightRepository, AIInsightRepository>();
 
         // Storage
         services
