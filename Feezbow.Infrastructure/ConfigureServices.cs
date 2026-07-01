@@ -190,6 +190,7 @@ public static class ConfigureServices
         services.AddScoped<IRecipeRepository, RecipeRepository>();
         services.AddScoped<IPantryRepository, PantryRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<IAIInsightRepository, AIInsightRepository>();
 
         // Storage
         services
