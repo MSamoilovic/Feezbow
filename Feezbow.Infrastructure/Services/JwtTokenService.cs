@@ -13,6 +13,9 @@ namespace Feezbow.Infrastructure.Services;
 public class JwtTokenService(IOptions<JwtOptions> _options, UserManager<User> userManager)
     : IJwtTokenService
 {
+    // Neconfirmovani korisnik sme da koristi sistem ovoliko sati od registracije,
+    // posle čega ga "EmailConfirmed" policy blokira dok ne potvrdi mejl.
+    private const int EmailConfirmationGraceHours = 24;
 
     private  JwtOptions Options => _options.Value;
     public async Task<string> GenerateTokenAsync(User user, CancellationToken cancellationToken = default)
@@ -24,6 +27,17 @@ public class JwtTokenService(IOptions<JwtOptions> _options, UserManager<User> us
             new(ClaimTypes.Email, user.Email ?? string.Empty),
             new("email_confirmed", user.EmailConfirmed.ToString().ToLower()),
         };
+
+        // Za nepotvrđene: rok do kog grace prozor važi (unix sekunde, UTC).
+        if (!user.EmailConfirmed)
+        {
+            var requestedAt = user.EmailConfirmationRequestedAt ?? user.CreatedAt;
+            var deadlineUtc = DateTime.SpecifyKind(requestedAt, DateTimeKind.Utc)
+                .AddHours(EmailConfirmationGraceHours);
+            claims.Add(new Claim(
+                "confirm_deadline",
+                ((DateTimeOffset)deadlineUtc).ToUnixTimeSeconds().ToString()));
+        }
 
         var roles = await userManager.GetRolesAsync(user);
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));

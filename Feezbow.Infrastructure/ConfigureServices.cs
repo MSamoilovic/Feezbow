@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using Anthropic.SDK;
 using Feezbow.Application.Common.Interfaces;
 using Feezbow.Domain.Entities;
 using Feezbow.Domain.Interfaces;
@@ -152,7 +151,21 @@ public static class ConfigureServices
         {
             options.AddPolicy(
                 "EmailConfirmed",
-                policy => policy.RequireClaim("email_confirmed", "true")
+                policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    // Potvrđen mejl — uvek prolazi. U suprotnom, prolazi dok traje
+                    // grace prozor (confirm_deadline claim, unix sekunde).
+                    policy.RequireAssertion(context =>
+                    {
+                        if (context.User.HasClaim("email_confirmed", "true"))
+                            return true;
+
+                        var deadline = context.User.FindFirst("confirm_deadline")?.Value;
+                        return long.TryParse(deadline, out var unix)
+                            && DateTimeOffset.UtcNow.ToUnixTimeSeconds() < unix;
+                    });
+                }
             );
 
             options.AddPolicy(
@@ -308,21 +321,32 @@ public static class ConfigureServices
         });
 
         services
-            .AddOptions<AnthropicOptions>()
-            .Bind(configuration.GetSection(AnthropicOptions.SectionName))
+            .AddOptions<GeminiOptions>()
+            .Bind(configuration.GetSection(GeminiOptions.SectionName))
             .ValidateOnStart();
 
-        services.AddSingleton(sp =>
-        {
-            var key = configuration["Anthropic:ApiKey"] ?? string.Empty;
-            return new AnthropicClient(new APIAuthentication(key));
-        });
-
-        services.AddScoped<IAIService, AnthropicAiService>();
+        services.AddScoped<IAIService, GeminiAIService>();
         services.AddScoped<IRecipeUrlFetcher, RecipeUrlFetcher>();
         services.AddSingleton<IPdfTextExtractor, PdfTextExtractor>();
         services.AddScoped<IDigestNotificationService, DigestNotificationService>();
         services.AddHostedService<DigestScheduler>();
+
+        services.AddHttpClient(
+            "Gemini",
+            c =>
+            {
+                // NB: base se završava na /v1beta/ (bez /models/). Putanja u servisu
+                // je "models/{model}:generateContent" — mora imati "/" pre dvotačke,
+                // inače Uri parser tretira "{model}:" kao URI scheme i ignoriše base.
+                c.BaseAddress = new Uri(
+                    "https://generativelanguage.googleapis.com/v1beta/"
+                );
+                c.Timeout = TimeSpan.FromSeconds(100);
+                var apiKey = configuration["Gemini:ApiKey"] ?? string.Empty;
+                if (!string.IsNullOrEmpty(apiKey))
+                    c.DefaultRequestHeaders.Add("x-goog-api-key", apiKey);
+            }
+        );
 
         services.AddHttpClient(
             "RecipeUrlFetcher",
