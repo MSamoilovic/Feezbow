@@ -29,24 +29,22 @@ public class AttachmentsController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Upload(
-        [FromForm] AttachmentOwnerType ownerType,
-        [FromForm] long ownerId,
-        [FromForm] IFormFile file,
-        [FromForm] string? description,
+        [FromForm] UploadAttachmentForm form,
         CancellationToken cancellationToken)
     {
+        var file = form.File;
         if (file is null || file.Length == 0)
             return BadRequest(new { error = "File is required." });
 
         await using var stream = file.OpenReadStream();
         var command = new UploadAttachmentCommand(
-            ownerType,
-            ownerId,
+            form.OwnerType,
+            form.OwnerId,
             file.FileName,
             file.ContentType,
             file.Length,
             stream,
-            description);
+            form.Description);
 
         return Ok(await mediator.Send(command, cancellationToken));
     }

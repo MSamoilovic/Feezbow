@@ -11,7 +11,7 @@ namespace Feezbow.Infrastructure.BackgroundServices;
 
 public class DigestScheduler(
     IServiceScopeFactory scopeFactory,
-    IOptions<AnthropicOptions> options,
+    IOptions<GeminiOptions> options,
     ILogger<DigestScheduler> logger
 ) : BackgroundService
 {

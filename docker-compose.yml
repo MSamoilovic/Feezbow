@@ -75,6 +75,10 @@ services:
       - Redis__InstanceName=${REDIS_INSTANCE_NAME:-feezbow}
       - Redis__DefaultExpirationMinutes=${REDIS_DEFAULT_EXPIRATION_MINUTES:-5}
 
+      # AI (Gemini)
+      - Gemini__ApiKey=${GEMINI_API_KEY:-}
+      - Gemini__DefaultModel=${GEMINI_MODEL:-gemini-2.5-flash}
+
     depends_on:
       postgres:
         condition: service_healthy
