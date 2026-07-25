@@ -1,15 +1,14 @@
 namespace Feezbow.Infrastructure.Options;
 
-public class AnthropicOptions
+public class GeminiOptions
 {
-    public const string SectionName = "Anthropic";
+    public const string SectionName = "Gemini";
 
-    public string ApiKey { get; init; } = string.Empty; // placeholder — set in .env
-    public string DefaultModel { get; init; } = "claude-opus-4-6";
+    public string ApiKey { get; init; } = string.Empty; // placeholder — set in .env (Gemini__ApiKey)
+    public string DefaultModel { get; init; } = "gemini-2.5-flash";
     public int MaxTokensDefault { get; init; } = 1_024;
     public bool Enabled { get; init; } = true;
     public bool RecipeParserEnabled { get; init; } = true;
-    public bool PromptCachingEnabled { get; init; } = true;
     public bool TaskParserEnabled { get; init; } = true;
     public bool PantryReceiptParserEnabled { get; init; } = true;
     public bool BillOcrEnabled { get; init; } = true;
@@ -17,9 +16,5 @@ public class AnthropicOptions
     public bool MealPlanSuggestEnabled { get; init; } = true;
     public bool ShoppingListCleanupEnabled { get; init; } = true;
 
-    /// <summary>
-    /// AI prijedlozi sa confidence ispod ovog praga se ne vraćaju korisniku.
-    /// Handler treba provjeriti score i baciti ili logirati ako je ispod praga.
-    /// </summary>
     public double MinConfidenceScore { get; init; } = 0.7;
 }
