@@ -320,33 +320,58 @@ public static class ConfigureServices
             return NotificationResiliencePipelineFactory.Create(logger);
         });
 
+        // AI provider seam: lokalni dev = Ollama (Gemma), produkcija = Gemini preko API-ja.
+        // Bira se preko "Ai:Provider" ("Gemini" | "Ollama"); default = Gemini.
+        var aiProvider = configuration["Ai:Provider"] ?? "Gemini";
+
         services
             .AddOptions<GeminiOptions>()
             .Bind(configuration.GetSection(GeminiOptions.SectionName))
             .ValidateOnStart();
 
-        services.AddScoped<IAIService, GeminiAIService>();
+        services
+            .AddOptions<OllamaOptions>()
+            .Bind(configuration.GetSection(OllamaOptions.SectionName));
+
         services.AddScoped<IRecipeUrlFetcher, RecipeUrlFetcher>();
         services.AddSingleton<IPdfTextExtractor, PdfTextExtractor>();
         services.AddScoped<IDigestNotificationService, DigestNotificationService>();
         services.AddHostedService<DigestScheduler>();
 
-        services.AddHttpClient(
-            "Gemini",
-            c =>
-            {
-                // NB: base se završava na /v1beta/ (bez /models/). Putanja u servisu
-                // je "models/{model}:generateContent" — mora imati "/" pre dvotačke,
-                // inače Uri parser tretira "{model}:" kao URI scheme i ignoriše base.
-                c.BaseAddress = new Uri(
-                    "https://generativelanguage.googleapis.com/v1beta/"
-                );
-                c.Timeout = TimeSpan.FromSeconds(100);
-                var apiKey = configuration["Gemini:ApiKey"] ?? string.Empty;
-                if (!string.IsNullOrEmpty(apiKey))
-                    c.DefaultRequestHeaders.Add("x-goog-api-key", apiKey);
-            }
-        );
+        if (aiProvider.Equals("Ollama", StringComparison.OrdinalIgnoreCase))
+        {
+            services.AddScoped<IAIService, OllamaAIService>();
+            services.AddHttpClient(
+                "Ollama",
+                c =>
+                {
+                    var baseUrl = configuration["Ollama:BaseUrl"] ?? "http://localhost:11434";
+                    c.BaseAddress = new Uri(baseUrl.TrimEnd('/') + "/");
+                    // Lokalni model može biti spor (cold start + generacija).
+                    c.Timeout = TimeSpan.FromSeconds(300);
+                }
+            );
+        }
+        else
+        {
+            services.AddScoped<IAIService, GeminiAIService>();
+            services.AddHttpClient(
+                "Gemini",
+                c =>
+                {
+                    // NB: base se završava na /v1beta/ (bez /models/). Putanja u servisu
+                    // je "models/{model}:generateContent" — mora imati "/" pre dvotačke,
+                    // inače Uri parser tretira "{model}:" kao URI scheme i ignoriše base.
+                    c.BaseAddress = new Uri(
+                        "https://generativelanguage.googleapis.com/v1beta/"
+                    );
+                    c.Timeout = TimeSpan.FromSeconds(100);
+                    var apiKey = configuration["Gemini:ApiKey"] ?? string.Empty;
+                    if (!string.IsNullOrEmpty(apiKey))
+                        c.DefaultRequestHeaders.Add("x-goog-api-key", apiKey);
+                }
+            );
+        }
 
         services.AddHttpClient(
             "RecipeUrlFetcher",
